@@ -96,14 +96,4 @@ regContxt = '<div id="post_content_.*?>(.*?)</div>'
 pachong.getConnext(regContxt)
 pachong.saveImge()
 
-#testurl = "https://www.douban.com/people/129728347/"
-#filename = "mycook.txt"
-#Data = GetloginWebAccort(name, password)
-#testCook(url)
-#SaveCookieToFile(filename, Data, url, testurl)
-#html = loginWeb(name, password,url)
-#print(html)
-
-#for imge in imgelist:
-#    print(imge)
 
