@@ -1,5 +1,109 @@
 # -*- coding:utf-8 -*-
-
+#from urllib.request import urlopen
 import re
 import urllib.request
 import http.cookiejar
+
+class PaChong:
+    def __init__(self, url,fileName):
+        self.url = url
+        self.fileName = fileName
+        self.file = None
+    
+    def SaveCookieToFile(self, filename ,accort, url, testurl):
+        cookie = http.cookiejar.MozillaCookieJar(filename)
+        handler = urllib.request.HTTPCookieProcessor(cookie)
+        opener = urllib.request.build_opener(handler)
+        response = opener.open(url, accort)
+        cookie.save(filename, True, True)
+        
+        result = opener.open(testurl)
+        print(result.read())
+
+    def testCook(self,url):
+        cookie = http.cookiejar.CookieJar()
+        hander = urllib.request.HTTPCookieProcessor(cookie)
+        opener = urllib.request.build_opener(hander)
+        response = opener.open(url)
+        for item in cookie:
+            print('Name =' + item.name)
+            print('value =' + item.value)
+            
+    def GetloginWebAccort(self,name, password):
+        loginValus = {}
+        loginValus['username'] = name
+        loginValus['password'] = password
+        date = urllib.parse.urlencode(loginValus).encode(encoding='utf_8')
+        return date
+        try:
+            request = urllib.request.urlopen(url, date)
+        except urllib.error.URLError as e:
+            print(e.reason)
+        return request.read()
+    
+    def getHtml(self):
+        request = urllib.request.Request(self.url)
+        try:
+            page = urllib.request.urlopen(request)
+        except urllib.error.URLError as e:
+            print(e.reason)
+        self.html = page.read()
+        self.html=self.html.decode('utf-8')
+        html = self.html
+        print(html)
+        return html
+    
+    def getConnext(self, reg):
+      #  reg = r'src="(.+?\.jpg)"'
+        imgre = re.compile(reg) 
+
+        result = re.search(imgre, self.html)
+        if result is None:
+            print("Can't find the context")
+        else:
+            print("Find the context")   
+        
+        self.contextlist = re.findall(imgre,  self.html)
+        
+        return self.contextlist
+    
+    def saveImge(self):
+        #imgre = re.compile(reg) 
+        for item in self.contextlist:
+            #urllib.request.urlretrieve(imge, '%s.jpg' % x)
+            #x+=1
+            #haveImg = re.search("img", item[3])
+            #if not haveImg:
+             #   print(item[0],item[1],item[2],item[4])
+            if self.file is None:
+                self.file = open(self.fileName, "w+")
+            print(item)
+            self.file.write(item + '\n')
+   
+#print("Open the html:")
+#reg =  '<div.*?author">.*?<a.*?<img.*?>(.*?)</a>.*?<div.*?'+ 'content">(.*?)<!--(.*?)-->.*?</div>(.*?)<div class="stats.*?class="number">(.*?)</i>'       
+url = "http://tieba.baidu.com/p/3138733512?see_lz=1&pn=1"
+reg = '<h3 class="core_title_txt.*?>(.*?)</h3>'
+pachong = PaChong(url, "TestConext.txt")
+
+pachong.getHtml()
+pachong.getConnext(reg)
+pachong.saveImge()
+regNUm = '<li class="l_reply_num.*?</span>.*?<span.*?>(.*?)</span>'
+pachong.getConnext(regNUm)
+pachong.saveImge()
+regContxt = '<div id="post_content_.*?>(.*?)</div>'
+pachong.getConnext(regContxt)
+pachong.saveImge()
+
+#testurl = "https://www.douban.com/people/129728347/"
+#filename = "mycook.txt"
+#Data = GetloginWebAccort(name, password)
+#testCook(url)
+#SaveCookieToFile(filename, Data, url, testurl)
+#html = loginWeb(name, password,url)
+#print(html)
+
+#for imge in imgelist:
+#    print(imge)
+
